@@ -69,6 +69,10 @@ $app->get("/products/:desurl", function($desurl) {
 //ROUTE PARA ACESSAR CARRINHO DE COMPRAS
 $app->get("/cart", function() {
 
+/*	unset($_SESSION['Cart']);
+	var_dump($_SESSION);
+	exit;
+*/
 	$cart = Cart::getFromSession();
 
 	$page = new Page();
