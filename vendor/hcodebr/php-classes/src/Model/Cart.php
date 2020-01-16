@@ -14,20 +14,32 @@ class Cart extends Model{
 	//NOME DA SESSÃO PARA GUARDAR O ID DO CARRINHO NA SESSÃO
 	const SESSION = "Cart";
 
-	public static function getFromSession()
+	public function getFromSession()
 	{
 
 		$cart = new Cart();
 
-		if(isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
 
-			$cart->get((int)$_SESSION[Cart::SESSION]['idcart']);
+		if(isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
+			
+			if ($_SESSION['User']['iduser'] != $_SESSION[Cart::SESSION]['iduser']){
+
+			
+				$cart->getFromUserID($_SESSION['User']['iduser']);
+				// $this->setData($_SESSION['User']);
+				// $t = $this->getiduser();
+				// echo $t;
+				// exit;
+			}else {
+				$cart->get((int)$_SESSION[Cart::SESSION]['idcart']);
+			}
+			
 
 		}else {
 
 			$cart->getFromSessionID();
 
-			if(!(int)$cart->getidcart() > 0) {
+			if((int)$cart->getidcart() > 0) {
 
 				$data = [
 					'dessessionid'	=>	session_id()
@@ -54,11 +66,55 @@ class Cart extends Model{
 		return $cart;
 	}
 
+	public function getFromUserID(int $iduser)
+	{
+
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_carts WHERE dessessionid = :dessessionid", [
+			':dessessionid'	=>	session_id()
+		]);
+
+		//PEGA A ÚLTIMA POSIÇÃO DO ARRAY
+		$endResult = end($results);
+		
+
+		if(count($results) > 0 && $endResult['iduser'] != $iduser && $endResult['iduser'] != NULL){
+		
+			$this->setData($results[0]);
+
+			$this->setData($_SESSION['User']);
+
+			$sql->query("
+				INSERT INTO tb_carts 
+				(dessessionid, iduser, deszipcode, vlfreight, nrdays)
+        		VALUES
+        		(:dessessionid, :iduser, :deszipcode, :vlfreight, :nrdays)", [
+        			':dessessionid'	=>	$this->getdessessionid(),
+					':iduser'		=>	$this->getiduser(),
+					':deszipcode'	=>	$this->getdeszipcode(),
+					':vlfreight'	=>	$this->getvlfreight(),
+					':nrdays'		=>	$this->getnrdays()
+        		]);
+
+		
+		}else if(count($results) > 0 && $endResult['iduser'] == NULL) {
+
+			$this->setData($results[0]);
+
+			$this->setData($_SESSION['User']);
+
+			$this->save();
+		}
+
+	}
+
 	public function setToSession()
 	{
 
 		$_SESSION[Cart::SESSION] = $this->getValues();
-
+		
 	}
 
 	public function get(int $idcart)
@@ -81,14 +137,12 @@ class Cart extends Model{
 	public function getFromSessionID()
 	{
 
+
 		$sql = new Sql();
 
 		$results = $sql->select("SELECT * FROM tb_carts WHERE dessessionid = :dessessionid", [
 			':dessessionid'	=>	session_id()
 		]);
-		/*echo "tests<br><br>";
-		var_dump($results);
-		exit;*/
 		
 		if(count($results) > 0){
 

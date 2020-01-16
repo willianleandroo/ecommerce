@@ -44,7 +44,7 @@ class User extends Model{
 
 		} else {
 
-			if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+			if (!$inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
 
 				//É UM ADMIN E ESTÁ LOGADO
 				return true;
