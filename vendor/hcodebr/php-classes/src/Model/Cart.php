@@ -21,13 +21,13 @@ class Cart extends Model{
 
 		$cart = new Cart();
 
-
 		if(isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
-			
+		
 			if (isset($_SESSION['User']['iduser']) && $_SESSION['User']['iduser'] != $_SESSION[Cart::SESSION]['iduser']){
-
-			
+				
 				$cart->getFromUserID($_SESSION['User']['iduser']);
+				// var_dump($cart->get);
+				// exit;
 				// $this->setData($_SESSION['User']);
 				// $t = $this->getiduser();
 				// echo $t;
@@ -273,7 +273,7 @@ class Cart extends Model{
 			$qs = http_build_query([
 				'nCdEmpresa'			=>	'',
 				'sDsSenha'				=>	'',
-				'nCdServico'			=>	'04014',
+				'nCdServico'			=>	'04510',
 				'sCepOrigem'			=>	'09853-120',
 				'sCepDestino'			=>	$nrzipcode,
 				'nVlPeso'				=>	$totals['vlweight'],
@@ -282,8 +282,8 @@ class Cart extends Model{
 				'nVlAltura'				=>	$totals['vlheight'],
 				'nVlLargura'			=>	$totals['vlwidth'],
 				'nVlDiametro'			=>	'0',
-				'sCdMaoPropria'			=>	'S',
-				'nVlValorDeclarado'		=>	$totals['vlprice'],
+				'sCdMaoPropria'			=>	'N',
+				'nVlValorDeclarado'		=>	0,
 				'sCdAvisoRecebimento'	=>	'S'
 
 			]);
