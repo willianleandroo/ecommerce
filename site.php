@@ -342,6 +342,80 @@ $app->post("/forgot/reset", function () {
 });
 
 
+// ROUTES DO "MEU PERFIL"
+$app->get("/profile", function() {
+
+	User::verifyLogin(false);
+
+	$user = User::getFromSession();
+
+	$page = new Page();
+
+	$page->setTpl("profile", [
+		'user'			=>	$user->getValues(),
+		'profileMsg'	=>	User::getSuccess(),
+		'profileError'	=>	User::getError()
+	]);
+
+});
+
+// ROUTE DE EDITAR DADOS DO USUÁRIO
+$app->post("/profile", function() {
+
+
+	User::verifyLogin(false);
+
+
+
+	if (!isset($_POST['desperson']) || $_POST['desperson'] === '')  {
+
+		User::setError("Preencha o seu Nome.");
+		header("Location: /profile");
+		exit;
+	}
+
+	if (!isset($_POST['desemail']) || $_POST['desemail'] === '')  {
+
+		User::setError("Preencha o seu Email.");
+		header("Location: /profile");
+		exit;
+	}
+
+	$user = User::getFromSession();
+
+	if ($_POST['desemail'] != $user->getdesemail()) {
+
+		if (User::checkLoginExist($_POST['desemail'])) {
+
+			User::setError("Este email já está em uso por outro usuário");
+			header("Location: /profile");
+			exit;
+		}
+	}
+	
+
+	
+	// MANTENDO O ACESSO DE NÃO ADMIN, CASO O USUÁRIO DESCUBRA ESSE PARAMETRO E TENTE ALTERÁ-LO
+	$_POST['inadmin'] = $user->getinadmin();
+
+	// MANTENDO A SENHA JÁ USADADA
+	$_POST['despassword'] = $user->getdespassword();
+
+	// MANTENDO O EMAIL JÁ UTILZIADO
+	$_POST['desemail'] = $user->getdesemail();
+
+	$user->setData($_POST);
+
+	$user->update();
+
+	User::setSuccess("Dados alterados com sucesso");
+
+	header("Location: /profile");
+	exit;
+
+});
+
+
 
 
 

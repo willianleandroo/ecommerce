@@ -18,6 +18,8 @@ class User extends Model{
 	const ERROR = "UserError";
 	const ERROR_REGISTER = "UserErrorRegister";
 
+	//SUCESS
+	const SUCCESS = "UserSuccess";
 
 	public static function getFromSession()
 	{
@@ -79,6 +81,7 @@ class User extends Model{
 
 		if (count($results) === 0)
 		{	
+
 			// CONTRA BARRA POIS AS EXCEÇÕES FICAM NA RAIZ DO PROJETO DO PHP E NÃO CRIAMOS A NOSSA NESSE DIR
 			throw new \Exception("Usuário inexistente ou sena inválida.", 1);
 		}
@@ -175,11 +178,13 @@ class User extends Model{
 	{
 		$sql = new Sql();
 
+
 		$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
 			":iduser"		=>	$this->getiduser(),
 			":desperson"	=>	utf8_decode($this->getdesperson()),
 			":deslogin"		=>	$this->getdeslogin(),
-			":despassword"	=>	User::getPasswordHash($this->getdespassword()),
+			// ":despassword"	=>	User::getPasswordHash($this->getdespassword()),
+			":despassword"	=>	$this->getdespassword(),
 			":desemail"		=>	$this->getdesemail(),
 			":nrphone"		=>	$this->getnrphone(),
 			":inadmin"		=>	$this->getinadmin()
@@ -412,6 +417,31 @@ class User extends Model{
 		]);
 
 	}
+
+	// MENSAGENS NÃO NECESSARIAMENTE DE ERROS
+	public static function setSuccess($msg)
+	{
+
+		$_SESSION[User::SUCCESS] = $msg;
+
+	}
+
+	public static function getSuccess()
+	{
+
+		$msg = isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS] ? $_SESSION[User::SUCCESS] : '';
+
+		User::clearSuccess();
+
+		return $msg;
+	}
+
+	public static function clearSuccess()
+	{
+
+		$_SESSION[User::SUCCESS] = NULL;
+	}
+
 
 
 }
