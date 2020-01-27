@@ -232,7 +232,7 @@ class Cart extends Model{
 			", [
 			':idcart'	=>	$this->getidcart()
 		]);
-
+		
 		return Product::checkList($rows);
 	}
 
