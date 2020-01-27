@@ -20,9 +20,9 @@ class Cart extends Model{
 	{
 
 		$cart = new Cart();
-
-		if(isset($_SESSION[Cart::SESSION]) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
-		
+	
+		if(isset($_SESSION[Cart::SESSION]['idcart']) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
+			
 			if (isset($_SESSION['User']['iduser']) && $_SESSION['User']['iduser'] != $_SESSION[Cart::SESSION]['iduser']){
 				
 				$cart->getFromUserID($_SESSION['User']['iduser']);
@@ -134,7 +134,7 @@ class Cart extends Model{
 		if(count($results) > 0){
 
 			$this->setData($results[0]);
-		}
+		} 
 
 	}
 
@@ -170,7 +170,7 @@ class Cart extends Model{
 			':vlfreight'	=>	$this->getvlfreight(),
 			':nrdays'		=>	$this->getnrdays()
 		]);
-
+		
 		$this->setData($results[0]);
 
 	}
