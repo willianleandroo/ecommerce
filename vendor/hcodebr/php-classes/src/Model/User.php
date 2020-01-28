@@ -69,6 +69,20 @@ class User extends Model{
 		}
 	}
 
+	// MÉTODO Q VERIFICA SE ESTÁ LOGADO OU NÃO
+	public static function verifyLogin($inadmin = true)
+	{
+		if (!User::checkLogin($inadmin)) {
+			
+			if ($inadmin) {
+				header("Location: /admin/login");
+			} else {
+				header("Location: /login");
+			}
+			exit;
+		}
+	}
+
 
 	public static function login ($login, $password)
 	{
@@ -106,21 +120,6 @@ class User extends Model{
 		}
 
 
-	}
-
-
-	// MÉTODO Q VERIFICA SE ESTÁ LOGADO OU NÃO
-	public static function verifyLogin($inadmin = true)
-	{
-		if (!User::checkLogin($inadmin)) {
-			
-			if ($inadmin) {
-				header("Location: /admin/login");
-			} else {
-				header("Location: /login");
-			}
-			exit;
-		}
 	}
 
 
@@ -482,6 +481,70 @@ class User extends Model{
 		]);
 
 		return $results;
+	}
+
+
+	//PAGINAÇÃO DOS USUÁRIOS
+	public static function getPage($page = 1, $itemsPerPage = 10)
+	{
+
+		$start = ($page-1)* $itemsPerPage;
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+			SELECT SQL_CALC_FOUND_ROWS *
+			FROM tb_users a 
+			INNER JOIN tb_persons b 
+			USING(idperson) 
+			ORDER BY b.desperson
+			LIMIT $start, $itemsPerPage;
+			");
+
+		$resultsTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal");
+
+
+		return [
+			'data'	=>	$results,
+			'total'	=>	(int)$resultsTotal[0]["nrtotal"],
+			'pages'	=>	ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)//AREDDONDANDO A CONTA PARA MAIS (NMR INTEIRO)
+		];
+
+
+	}
+
+	//PAGINAÇÃO DOS USUÁRIOS COM BUSCA
+	public static function getPageSearch($search, $page = 1, $itemsPerPage = 10)
+	{
+
+		$start = ($page-1)* $itemsPerPage;
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+			SELECT SQL_CALC_FOUND_ROWS *
+			FROM tb_users a 
+			INNER JOIN tb_persons b 
+			USING(idperson) 
+			WHERE b.desperson LIKE :search
+			OR b.desemail = :search
+			OR a.deslogin LIKE :search
+			ORDER BY b.desperson
+			LIMIT $start, $itemsPerPage;
+			", [
+				':search'	=>	'%' . $search . '%'
+			]);
+
+		$resultsTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal");
+
+
+		return [
+			'data'	=>	$results,
+			'total'	=>	(int)$resultsTotal[0]["nrtotal"],
+			'pages'	=>	ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)//AREDDONDANDO A CONTA PARA MAIS (NMR INTEIRO)
+		];
+
+
 	}
 
 

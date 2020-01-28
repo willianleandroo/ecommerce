@@ -20,24 +20,13 @@ class Cart extends Model{
 	{
 
 		$cart = new Cart();
+
+		
 	
 		if(isset($_SESSION[Cart::SESSION]['idcart']) && (int)$_SESSION[Cart::SESSION]['idcart'] > 0) {
-			
-			if (isset($_SESSION['User']['iduser']) && $_SESSION['User']['iduser'] != $_SESSION[Cart::SESSION]['iduser']){
-				
-				$cart->getFromUserID($_SESSION['User']['iduser']);
-				// var_dump($cart->get);
-				// exit;
-				// $this->setData($_SESSION['User']);
-				// $t = $this->getiduser();
-				// echo $t;
-				// exit;
-			}else {
 
 				$cart->get((int)$_SESSION[Cart::SESSION]['idcart']);
-				
-			}
-			
+				$cart->save();
 
 		}else {
 
@@ -71,7 +60,7 @@ class Cart extends Model{
 		return $cart;
 	}
 
-	public function getFromUserID(int $iduser)
+	/*public function getFromUserID(int $iduser)
 	{
 
 
@@ -83,7 +72,6 @@ class Cart extends Model{
 
 		//PEGA A ÚLTIMA POSIÇÃO DO ARRAY
 		$endResult = end($results);
-		
 
 		if(count($results) > 0 && $endResult['iduser'] != $iduser && $endResult['iduser'] != NULL){
 		
@@ -113,7 +101,7 @@ class Cart extends Model{
 			$this->save();
 		}
 
-	}
+	}*/
 
 	public function setToSession()
 	{
@@ -125,12 +113,13 @@ class Cart extends Model{
 	public function get(int $idcart)
 	{
 
+
 		$sql = new Sql();
 
 		$results = $sql->select("SELECT * FROM tb_carts WHERE idcart = :idcart", [
 			':idcart'	=>	$idcart
 		]);
-
+	
 		if(count($results) > 0){
 
 			$this->setData($results[0]);
@@ -161,15 +150,35 @@ class Cart extends Model{
 	{
 
 		$sql = new Sql();
+		
+		$results2 = $sql->select("SELECT * FROM tb_carts WHERE idcart = :idcart", [
+			':idcart'	=>	$this->getidcart()
+		]);
 
-		$results = $sql->select("CALL sp_carts_save(:idcart, :dessessionid, :iduser, :deszipcode, :vlfreight, :nrdays)", [
+		if (count($results2) > 0) {
+
+			$this->setiduser($_SESSION['User']['iduser']);
+
+			$results = $sql->select("CALL sp_carts_save(:idcart, :dessessionid, :iduser, :deszipcode, :vlfreight, :nrdays)", [
 			':idcart'		=>	$this->getidcart(),
 			':dessessionid'	=>	$this->getdessessionid(),
 			':iduser'		=>	$this->getiduser(),
 			':deszipcode'	=>	$this->getdeszipcode(),
 			':vlfreight'	=>	$this->getvlfreight(),
 			':nrdays'		=>	$this->getnrdays()
-		]);
+			]);
+
+		} else {
+
+			$results = $sql->select("CALL sp_carts_save(:idcart, :dessessionid, :iduser, :deszipcode, :vlfreight, :nrdays)", [
+			':idcart'		=>	$this->getidcart(),
+			':dessessionid'	=>	$this->getdessessionid(),
+			':iduser'		=>	$this->getiduser(),
+			':deszipcode'	=>	$this->getdeszipcode(),
+			':vlfreight'	=>	$this->getvlfreight(),
+			':nrdays'		=>	$this->getnrdays()
+			]);
+		}
 		
 		$this->setData($results[0]);
 

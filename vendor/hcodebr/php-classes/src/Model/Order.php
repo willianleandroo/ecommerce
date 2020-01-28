@@ -57,7 +57,11 @@ class Order extends Model
 
 
 		if (count($results) > 0) {
+
 			$this->setData($results[0]);
+			$vlsubtotal = array('vlsubtotal' =>  $this->getvltotal() - $this->getvlfreight());
+			$this->setData($vlsubtotal);
+			
 		}
 
 	}

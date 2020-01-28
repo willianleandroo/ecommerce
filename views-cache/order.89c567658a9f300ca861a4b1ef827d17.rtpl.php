@@ -119,15 +119,15 @@
                 <table class="table">
                 <tbody><tr>
                     <th style="width:50%">Subtotal:</th>
-                    <td>R$<?php echo formatPrice($cart["vlsubtotal"]); ?></td>
+                    <td>R$<?php echo formatPrice($order["vlsubtotal"]); ?></td>
                 </tr>
                 <tr>
                     <th>Frete:</th>
-                    <td>R$<?php echo formatPrice($cart["vlfreight"]); ?></td>
+                    <td>R$<?php echo formatPrice($order["vlfreight"]); ?></td>
                 </tr>
                 <tr>
                     <th>Total:</th>
-                    <td>R$<?php echo formatPrice($cart["vltotal"]); ?></td>
+                    <td>R$<?php echo formatPrice($order["vltotal"]); ?></td>
                 </tr>
                 </tbody></table>
             </div>

@@ -75,14 +75,13 @@ $app->get("/admin/orders/:idorder", function($idorder) {
 	$order = new Order();
 
 	$order->get((int)$idorder);
-
+	
 	$cart = $order->getCart();
 
 	$page = new PageAdmin();
 
 	$page->setTpl("order", [
 		'order'		=>	$order->getValues(),
-		'cart'		=>	$cart->getValues(),
 		'products'	=>	$cart->getProducts()
 
 	]);

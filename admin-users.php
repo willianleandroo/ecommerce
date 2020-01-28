@@ -9,14 +9,44 @@ $app->get('/admin/users', function () {
 
 	User::verifyLogin();
 
-	// TRAZENDO TODOS OS USUÁRIOS CADASTRADOS NO BANCO PARA PREENCHER NA TELA
-	$users = User::listAll();
+	$search = (isset($_GET['search'])) ? $_GET['search'] : '';
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
+
+	if ($search != '') {
+		
+		$pagination = User::getPageSearch($search, $page, 1);
+
+	} else {
+
+		// TRAZENDO TODOS OS USUÁRIOS CADASTRADOS NO BANCO PARA PREENCHER NA TELA
+		$pagination = User::getPage($page, 1);
+
+	}
+
+
+
+	$pages = [];
+
+	for ($x = 0; $x < $pagination['pages']; $x++)
+	{
+
+		array_push($pages, [
+			'href'	=>	'/admin/users?'.http_build_query([
+				'page'		=>	$x + 1,
+				'search'	=>	$search
+			]),
+			'text'	=>	$x + 1
+		]);
+
+	}
 
 	$page = new PageAdmin();
 
 	// PASSANDO O RESULTADO DA FUNÇÃO listAll PARA A view "users"
 	$page->setTpl("users", array(
-		"users"=>$users
+		"users"		=>	$pagination['data'],
+		"search"	=>	$search,
+		"pages"		=>	$pages
 	));
 
 });
