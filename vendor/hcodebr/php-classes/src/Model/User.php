@@ -173,8 +173,8 @@ class User extends Model{
 		$this->setData($data);
 	}
 
-	// MÉTODO DE ATUALIZAR USUÁRIO
-	public function update()
+	// MÉTODO DE ATUALIZAR DADOS DO USUÁRIO ROTA /profile (SEM SENHA)
+	public function updateProfileData()
 	{
 		$sql = new Sql();
 
@@ -185,6 +185,27 @@ class User extends Model{
 			":deslogin"		=>	$this->getdeslogin(),
 			// ":despassword"	=>	User::getPasswordHash($this->getdespassword()),
 			":despassword"	=>	$this->getdespassword(),
+			":desemail"		=>	$this->getdesemail(),
+			":nrphone"		=>	$this->getnrphone(),
+			":inadmin"		=>	$this->getinadmin()
+		));
+
+		$this->setData($results[0]);
+
+	}
+
+	// MÉTODO DE ATUALIZAR SENHA DO USUÁRIO
+	public function update()
+	{
+		$sql = new Sql();
+
+
+		$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+			":iduser"		=>	$this->getiduser(),
+			":desperson"	=>	utf8_decode($this->getdesperson()),
+			":deslogin"		=>	$this->getdeslogin(),
+			":despassword"	=>	User::getPasswordHash($this->getdespassword()),
+			// ":despassword"	=>	$this->getdespassword(),
 			":desemail"		=>	$this->getdesemail(),
 			":nrphone"		=>	$this->getnrphone(),
 			":inadmin"		=>	$this->getinadmin()
