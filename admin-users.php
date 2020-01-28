@@ -23,8 +23,6 @@ $app->get('/admin/users', function () {
 
 	}
 
-
-
 	$pages = [];
 
 	for ($x = 0; $x < $pagination['pages']; $x++)

@@ -119,7 +119,7 @@ class Category extends Model{
 	}
 
 	//PAGINAÇÃO DOS PRODUTOS
-	public function getProductsPage($page = 1, $itemsPerPage = 2)
+	public function getProductsPage($page = 1, $itemsPerPage = 8)
 	{
 
 		$start = ($page-1)* $itemsPerPage;
@@ -170,6 +170,64 @@ class Category extends Model{
 			':idcategory'	=>	$this->getidcategory(),
 			'idproduct'		=>	$product->getidproduct()
 		]);
+	}
+
+
+	//PAGINAÇÃO DAS CATEGORIAS
+	public static function getPage($page = 1, $itemsPerPage = 10)
+	{
+
+		$start = ($page-1)* $itemsPerPage;
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+			SELECT SQL_CALC_FOUND_ROWS *
+			FROM tb_categories
+			ORDER BY descategory
+			LIMIT $start, $itemsPerPage;
+			");
+
+		$resultsTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal");
+
+
+		return [
+			'data'	=>	$results,
+			'total'	=>	(int)$resultsTotal[0]["nrtotal"],
+			'pages'	=>	ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)//AREDDONDANDO A CONTA PARA MAIS (NMR INTEIRO)
+		];
+
+
+	}
+
+	//PAGINAÇÃO DAS CATEGORIAS COM BUSCA
+	public static function getPageSearch($search, $page = 1, $itemsPerPage = 10)
+	{
+
+		$start = ($page-1)* $itemsPerPage;
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+			SELECT SQL_CALC_FOUND_ROWS *
+			FROM tb_categories
+			WHERE descategory LIKE :search
+			ORDER BY descategory
+			LIMIT $start, $itemsPerPage;
+			", [
+				':search'	=>	'%' . $search . '%'
+			]);
+
+		$resultsTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal");
+
+
+		return [
+			'data'	=>	$results,
+			'total'	=>	(int)$resultsTotal[0]["nrtotal"],
+			'pages'	=>	ceil($resultsTotal[0]["nrtotal"] / $itemsPerPage)//AREDDONDANDO A CONTA PARA MAIS (NMR INTEIRO)
+		];
+
+
 	}
 
 
