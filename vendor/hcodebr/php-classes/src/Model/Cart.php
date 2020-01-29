@@ -155,7 +155,7 @@ class Cart extends Model{
 			':idcart'	=>	$this->getidcart()
 		]);
 
-		if (count($results2) > 0) {
+		if (count($results2) > 0 && isset($_SESSION['User'])) {
 
 			$this->setiduser($_SESSION['User']['iduser']);
 
