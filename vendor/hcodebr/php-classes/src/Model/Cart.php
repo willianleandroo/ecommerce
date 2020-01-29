@@ -379,6 +379,14 @@ class Cart extends Model{
 		$this->setvltotal($totals['vlprice'] + (float)$this->getvlfreight());
 	}
 
+	// MÉTODO PARA LIMPAR A SESSÃO E CRIAR UM NOVO session_id()
+	public static function removeSession()
+	{
+
+		$_SESSION[Cart::SESSION] = NULL;
+		session_regenerate_id();
+	}
+
 	
 }
 
