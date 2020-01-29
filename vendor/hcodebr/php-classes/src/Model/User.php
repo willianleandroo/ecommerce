@@ -193,7 +193,7 @@ class User extends Model{
 
 	}
 
-	// MÉTODO DE ATUALIZAR SENHA DO USUÁRIO
+/*	// MÉTODO DE ATUALIZAR SENHA DO USUÁRIO
 	public function update()
 	{
 		$sql = new Sql();
@@ -213,7 +213,7 @@ class User extends Model{
 		$this->setData($results[0]);
 
 	}
-
+*/
 
 	// DELETAR USER
 	public function delete()
@@ -355,11 +355,11 @@ class User extends Model{
 	//FUNÇÃO QUE ATUALIZA A SENHA DO USUÁRIO
 	public function setPassword($password)
 	{
-
+	
 		$sql = new Sql();
 
 		$sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
-			":password"	=>	$password,
+			":password"	=>	$this->getPasswordHash($password),
 			":iduser"	=>	$this->getiduser()
 		));
 

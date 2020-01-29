@@ -14,12 +14,12 @@ $app->get('/admin/users', function () {
 
 	if ($search != '') {
 		
-		$pagination = User::getPageSearch($search, $page, 1);
+		$pagination = User::getPageSearch($search, $page, 4);
 
 	} else {
 
 		// TRAZENDO TODOS OS USUÁRIOS CADASTRADOS NO BANCO PARA PREENCHER NA TELA
-		$pagination = User::getPage($page, 1);
+		$pagination = User::getPage($page, 4);
 
 	}
 
@@ -58,6 +58,65 @@ $app->get('/admin/users/create', function () {
 
 	$page->setTpl("users-create");
 });
+
+// ROUTE DA VIEW TROCAR SENHA DO USUÁRIO
+$app->get("/admin/users/:iduser/password", function($iduser) {
+
+	User::verifyLogin();
+
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$page = new PageAdmin();
+
+	$page->setTpl("users-password", [
+		'user'			=>	$user->getValues(),
+		'msgError'		=>	User::getError(),
+		'msgSuccess'	=>	User::getSuccess()
+	]);
+
+});
+
+// ROUTE DE TROCAR SENHA DO USUÁRIO
+$app->post("/admin/users/:iduser/password", function($iduser) {
+
+	User::verifyLogin();
+
+	if (!isset($_POST['despassword']) || $_POST['despassword'] === '') {
+
+		User::setError("Digite a nova senha.");
+		header("Location: /admin/users/$iduser/password");
+		exit;
+	}
+
+	if (!isset($_POST['despassword-confirm']) || $_POST['despassword-confirm'] === '') {
+
+		User::setError("Confirme a nova senha.");
+		header("Location: /admin/users/$iduser/password");
+		exit;
+	}
+
+	if ($_POST['despassword'] !== $_POST['despassword-confirm']) {
+
+		User::setError("As senhas não coincidem");
+		header("Location: /admin/users/$iduser/password");
+		exit;
+	}
+
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$user->setPassword($_POST['despassword']);
+
+	User::setSuccess("A senha foi alterada com sucesso");
+	header("Location: /admin/users/$iduser/password");
+	exit;
+});
+
+
+
 
 
 // ROUTE PARA EXCLUIR UM USUÁRIO

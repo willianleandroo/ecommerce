@@ -713,9 +713,9 @@ $app->post("/profile/change-password", function() {
 		exit;
 	}
 
-	$user->setdespassword($_POST['new_pass']);
+	$user->setPassword($_POST['new_pass']);
 
-	$user->update();
+	// $user->updateProfileData();
 
 	User::setSuccess("Senha alterada com sucesso.");
 	header("Location: /profile/change-password");
