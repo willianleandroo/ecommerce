@@ -77,7 +77,7 @@ $app->post("/admin/categories/create", function() {
 
 	$page->setTpl("categories-create");
 
-	header("Location: /admin/categories/");
+	header("Location: /admin/categories");
 	exit;
 });
 
@@ -105,7 +105,6 @@ $app->get("/admin/categories/:idcategory", function ($idcategory) {
 
 	$category->get((int)$idcategory);
 
-	
 	$page = new PageAdmin();
 
 	$page->setTpl("categories-update", [
@@ -125,9 +124,9 @@ $app->post("/admin/categories/:idcategory", function ($idcategory) {
 
 	$category->setData($_POST);
 
-	$category->save();
+	$category->update();
 
-	header("Location: /admin/categories/");
+	header("Location: /admin/categories");
 	exit;
 });
 
